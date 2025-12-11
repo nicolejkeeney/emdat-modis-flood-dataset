@@ -58,8 +58,6 @@ The pipeline produces `emdat_modis_flood_dataset.csv` containing MODIS-derived f
 
 ## Installation
 
-### Environment Setup
-
 This project uses conda for dependency management:
 
 ```bash

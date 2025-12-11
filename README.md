@@ -16,8 +16,7 @@ This work develops methods for:
 ### Final Dataset Output
 
 The pipeline produces `emdat_modis_flood_dataset.csv` containing MODIS-derived flood metrics for disaggregated EM-DAT events (2000-2024):
-- **Temporal resolution**: Admin1-month level
-- **Spatial resolution**: MODIS 250m imagery
+- **Temporal/spatial resolution**: Admin1-month level for each flood event
 - **Key metrics**: Flooded population, flooded area, normalized flooded area
 - **Quality flags**: Data quality indicators for each event
 
@@ -25,21 +24,20 @@ The pipeline produces `emdat_modis_flood_dataset.csv` containing MODIS-derived f
 
 - **EM-DAT**: International disaster database providing flood event records (2000-2024)
 - **MODIS**: Satellite imagery (Terra/Aqua) for flood detection via Google Earth Engine
-- **GAUL 2015**: Global Administrative Unit Layers (admin level 1 boundaries)
+- **GAUL 2015**: Global Administrative Unit Layers (admin level 1 & 2 boundaries)
 - **GPW**: NASA's Gridded Global Population of the World dataset
 
 ## Repository Structure
 
 ```
 ├── dataset_generation/           # Data processing pipeline
-│   ├── disaggregate_emdat.py
-│   ├── detect_flooded_pixels.py
-│   ├── extract_flood_metrics.py
-│   ├── combine_csvs.py
+│   ├── disaggregate_emdat.py     # Perform flood event disaggregation and GAUL polygon matching 
+│   ├── detect_flooded_pixels.py  # Create floodmaps 
+│   ├── extract_flood_metrics.py  # Compute floodmap metrics: flooded population, flooded area, etc. 
 │   ├── dataset_postprocessing.py # Data quality flags and cleanup
 │   ├── compute_adm1_summary_stats.py  # Generate admin1 summary statistics
+|   ├── split_emdat_ids_into_batches.py # Generate text inputs for batch processing of floodmaps 
 │   ├── utils/                    # Helper modules (flood detection, MODIS toolbox, etc.)
-│   └── generate_input_files/     # Scripts for creating batch input files
 │
 ├── figure_generation/            # Visualization and analysis scripts
 │   ├── visualize_floodmap.py     # Create flood map visualizations
@@ -48,9 +46,10 @@ The pipeline produces `emdat_modis_flood_dataset.csv` containing MODIS-derived f
 │   ├── event_duration_violinplot.py  # Event duration distributions
 │   └── data_analysis_utils.py    # Shared plotting utilities
 │
-├── data/                         # Data files (not tracked in git, except flags)
+├── data/                        
 │   ├── data_processing_flags.csv      # Flag definitions
 │   ├── emdat_modis_flood_dataset.csv  # Final dataset output
+│   ├── emdat_2000_2024.csv            # Manually cleaned EM-DAT flood records
 │   └── adm1_summary_stats.csv         # Admin1-level summary statistics
 │
 ├── environment.yml               # Conda environment specification

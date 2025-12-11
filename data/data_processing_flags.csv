@@ -1,0 +1,13 @@
+﻿flag,flag_meaning
+1,Start day originally NaN and was filled with first day of the month
+2,End day originally NaN and was filled with last day of the month
+3,MODIS flooded pixels cannot be generated because Terra Surface Reflectance data is not available before 2000-02-25
+4,Unspecified Earth Engine internal processing error
+5,Missing GPW population data
+6,Coordinate mismatch error between floodmap and GPW population data
+7,Admin units manually infilled from Location string
+8,Admin units manually infilled from literature
+9,Missing start/end month and/or year
+10,Missing location information; could not be infilled
+11,Unable to be disagreggated for unknown reasons
+12,No flooded pixels detected by MODIS water detection algorithm

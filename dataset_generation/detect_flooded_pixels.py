@@ -9,8 +9,9 @@ and exports results to Google Drive.
 Inputs
 ------
 - emdat_floods_by_mon_yr_adm1.csv : Disaggregated flood events
-- GAUL_2015/g2015_2014_1 : GAUL Level 1 administrative boundaries shapefile
-- ID list text file : File containing one flood event ID per line
+- g2015_2014_1/ : GAUL Level 1 administrative boundaries shapefile
+- ID list text file : File containing one flood event ID per line (generated
+in split_emdat_ids_into_batches.py)
 
 Outputs
 -------
@@ -46,8 +47,8 @@ from utils.utils_misc import check_dir_exists, check_file_exists
 from utils.logger import setup_logger, close_logger
 
 DATA_DIR = "../data/"
-EMDAT_FILEPATH = f"{DATA_DIR}emdat/emdat_floods_by_mon_yr_adm1.csv"
-GAUL_L1_FILEPATH = f"{DATA_DIR}GAUL_2015/g2015_2014_1"
+EMDAT_FILEPATH = f"{DATA_DIR}emdat_floods_by_mon_yr_adm1.csv"
+GAUL_L1_FILEPATH = f"{DATA_DIR}2015_2014_1/"
 DRIVE_EXPORT_FOLDER = "EE_flooded_pixels"
 EE_PROJECT_NAME = "clim-haz"  # Earth Engine project name (must be registered already)
 

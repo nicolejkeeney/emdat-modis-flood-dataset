@@ -1,13 +1,13 @@
 """
 Preprocess and disaggregate EM-DAT flood events.
 
-This script preprocesses raw EM-DAT flood data and disaggregates events by
+This script preprocesses EM-DAT flood data and disaggregates events by
 administrative zone (admin1) and month. Multi-month and multi-region events
 are split into individual admin1-month records.
 
 Inputs
 ------
-- emdat-2000-2024.csv : Raw EM-DAT disaster database
+- emdat-2000-2024.csv : EM-DAT disaster records, manually preprocessed
 - GAUL_2015/g2015_2014_2 : GAUL Level 2 administrative boundaries shapefile
 
 Outputs
@@ -32,66 +32,9 @@ from utils.emdat_toolbox import (
 from utils.utils_misc import check_dir_exists, check_file_exists
 
 DATA_DIR = "../data/"
-INPUT_FILEPATH = f"{DATA_DIR}emdat/emdat-2000-2024.csv"
-GAUL_L2_FILEPATH = f"{DATA_DIR}GAUL_2015/g2015_2014_2"  # Shapefile directory
-OUTPUT_FILEPATH = f"{DATA_DIR}emdat/emdat_floods_by_mon_yr_adm1.csv"
-
-
-def preprocess_emdat(input_filepath):
-    """
-    Read and preprocess raw EM-DAT data.
-
-    Filters for inland floods, removes events with missing critical date info,
-    and adjusts 2024 damages using CPI.
-
-    Parameters
-    ----------
-    input_filepath : str
-        Path to raw EM-DAT CSV file.
-
-    Returns
-    -------
-    pandas.DataFrame
-        Preprocessed EM-DAT DataFrame.
-    """
-    print(f"{inspect.currentframe().f_code.co_name}: Starting...")
-
-    # Read in data
-    emdat_df = pd.read_csv(input_filepath)
-
-    # Clean up the table
-    emdat_df.rename(columns={"DisNo.": "id"}, inplace=True)
-    emdat_df.replace({None: np.nan}, inplace=True)
-
-    # Subset for inland floods
-    emdat_df = emdat_df[emdat_df["Disaster Type"] == "Flood"]
-    emdat_df = emdat_df[emdat_df["Disaster Subtype"] != "Coastal flood"]
-
-    # Drop rows missing critical date info (Start or End Year/Month)
-    before = len(emdat_df)
-    required_date_fields = (
-        emdat_df["Start Year"].notna()
-        & emdat_df["Start Month"].notna()
-        & emdat_df["End Year"].notna()
-        & emdat_df["End Month"].notna()
-    )
-    emdat_df = emdat_df[required_date_fields]
-    after = len(emdat_df)
-    print(f"Dropped {before - after} rows due to missing Start or End Year/Month")
-
-    # Adjust 2024 damages using CPI
-    # EM-DAT economic damages have only been adjusted through 2023
-    CPI_ratio = 1.029495111  # CPI_2024/CPI_2023
-    emdat_df.loc[
-        emdat_df["Start Year"] == 2024, "Total Damage, Adjusted ('000 US$)"
-    ] = (
-        emdat_df.loc[emdat_df["Start Year"] == 2024, "Total Damage ('000 US$)"]
-        / CPI_ratio
-    )
-
-    print(f"{inspect.currentframe().f_code.co_name}: Completed successfully")
-
-    return emdat_df
+EMDAT_FILEPATH = f"{DATA_DIR}emdat_2000_2024.csv"
+GAUL_L2_FILEPATH = f"{DATA_DIR}g2015_2014_2/"
+OUTPUT_FILEPATH = f"{DATA_DIR}emdat_floods_by_mon_yr_adm1.csv"
 
 
 def read_gaul_shapefile(gaul_filepath):
@@ -243,20 +186,10 @@ def clean_and_export(emdat_df, output_filepath):
     cols_to_keep = [
         "id",
         "mon-yr-adm1-id",
-        "Disaster Type",
-        "Disaster Subtype",
-        "Event Name",
         "mon-yr",
         "Start Date",
         "End Date",
-        "Total Deaths",
-        "Total Affected",
-        "Total Damage, Adjusted ('000 US$)",
-        "CPI",
         "ISO",
-        "Country",
-        "Subregion",
-        "Admin Units",
         "adm1_name",
         "adm1_code",
         "data_processing_flags",
@@ -273,16 +206,14 @@ def main():
     print("Starting EM-DAT preprocessing and disaggregation")
 
     # Check that filepaths and directories exist
-    check_file_exists(INPUT_FILEPATH)
+    check_file_exists(EMDAT_FILEPATH)
     check_dir_exists(GAUL_L2_FILEPATH)
 
-    # Step 1: Preprocess raw EM-DAT data
-    emdat_df = preprocess_emdat(INPUT_FILEPATH)
-
-    # Step 2: Read GAUL shapefile
+    # Read in data
+    emdat_df = pd.read_csv(EMDAT_FILEPATH)
     gaul_l2 = read_gaul_shapefile(GAUL_L2_FILEPATH)
 
-    # Step 3: Initialize data processing flags column
+    # Initialize data processing flags column
     if "data_processing_flags" not in emdat_df.columns:
         emdat_df["data_processing_flags"] = ""
     else:
@@ -291,19 +222,19 @@ def main():
             lambda x: str(int(x)) if pd.notna(x) else ""
         )
 
-    # Step 4: Expand admin zones (match to GAUL codes)
+    # Expand admin zones (match to GAUL codes)
     emdat_df = expand_admin_zones(emdat_df, gaul_l2)
 
-    # Step 5: Add event dates
+    # Add event dates
     emdat_df = add_event_dates(emdat_df)
 
-    # Step 6: Split events by month
+    # Split events by month
     emdat_df = add_monthly_rows(emdat_df)
 
-    # Step 7: Append admin1 code to create unique monthly IDs
+    # Append admin1 code to create unique monthly IDs
     emdat_df = append_adm1_code_to_id(emdat_df)
 
-    # Step 8: Export disaggregated dataset
+    # Export disaggregated dataset
     clean_and_export(emdat_df, OUTPUT_FILEPATH)
 
     print("Completed EM-DAT preprocessing and disaggregation")

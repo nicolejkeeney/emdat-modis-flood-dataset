@@ -1,4 +1,4 @@
-name: clim-haz
+name: flood-impacts
 channels:
   - conda-forge
   - defaults

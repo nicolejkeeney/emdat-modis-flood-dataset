@@ -1,8 +1,8 @@
 # EM-DAT MODIS Flood Dataset
 
-This repository contains code for spatially and temporally disaggregating flood disaster records from EM-DAT using MODIS satellite imagery. The pipeline processes raw EM-DAT flood events (2000-2024), splits multi-region/multi-month events into admin1-month records, and detects floods using satellite imagery via Google Earth Engine.
+This repository contains code for spatially and temporally disaggregating flood disaster records from EM-DAT using MODIS satellite imagery. The pipeline processes raw EM-DAT flood events (2000-2024), splits multi-region/multi-month events into admin1-month records, and creates flood maps for each disaggregated event using satellite imagery via Google Earth Engine.
 
-Floodmaps are generated for each disagreggated event. For example, these visualizations of floodmaps from two different flood events:   <br>  
+Flood maps are generated for each disagreggated event. For example, the images below show flood maps from two different flood events:   <br>  
 <img src="figure_generation/figs/floodmaps/10-2023-0651-USA-3244_flooded.png" width="250" style="display:inline-block; margin-right:5px;">
 <img src="figure_generation/figs/floodmaps/09-2024-0648-CMR-818_flooded.png" width="250" style="display:inline-block; margin-right:5px;">
 
@@ -10,7 +10,7 @@ Floodmaps are generated for each disagreggated event. For example, these visuali
 
 This work develops methods for:
 1. **EM-DAT Event Disaggregation & Geospatial Encoding**: Splitting multi-region/multi-month events into admin1-month records and matching each to its corresponding GAUL administrative region 1 polygon
-2. **Flood Detection**: Using an adapted version of the [Cloud2Street flood detection algorithm](https://github.com/cloudtostreet/MODIS_GlobalFloodDatabase) to create floodmaps for each admin1-month event
+2. **Flood Detection**: Using an adapted version of the [Cloud2Street flood detection algorithm](https://github.com/cloudtostreet/MODIS_GlobalFloodDatabase) to create flood maps for each admin1-month event
 3. **Visualization & Analysis**: Tools for creating flood maps, summary statistics, and comparing EM-DAT vs MODIS-derived metrics
 
 ### Final Dataset Output
@@ -32,11 +32,11 @@ The pipeline produces `emdat_modis_flood_dataset.csv` containing MODIS-derived f
 ```
 ├── dataset_generation/           # Data processing pipeline
 │   ├── disaggregate_emdat.py     # Perform flood event disaggregation and GAUL polygon matching 
-│   ├── detect_flooded_pixels.py  # Create floodmaps 
-│   ├── extract_flood_metrics.py  # Compute floodmap metrics: flooded population, flooded area, etc. 
+│   ├── detect_flooded_pixels.py  # Create flood maps 
+│   ├── extract_flood_metrics.py  # Compute flood map metrics: flooded population, flooded area, etc. 
 │   ├── dataset_postprocessing.py # Data quality flags and cleanup
 │   ├── compute_adm1_summary_stats.py  # Generate admin1 summary statistics
-|   ├── split_emdat_ids_into_batches.py # Generate text inputs for batch processing of floodmaps 
+|   ├── split_emdat_ids_into_batches.py # Generate text inputs for batch processing of flood maps 
 │   ├── utils/                    # Helper modules (flood detection, MODIS toolbox, etc.)
 │
 ├── figure_generation/            # Visualization and analysis scripts

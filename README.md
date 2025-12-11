@@ -2,10 +2,9 @@
 
 This repository contains code for spatially and temporally disaggregating flood disaster records from EM-DAT using MODIS satellite imagery. The pipeline processes raw EM-DAT flood events (2000-2024), splits multi-region/multi-month events into admin1-month records, and detects floods using satellite imagery via Google Earth Engine.
 
-Floodmaps are generated for each disagreggated event. For example, these visualizations of floodmaps from three different flood events:   <br>  
+Floodmaps are generated for each disagreggated event. For example, these visualizations of floodmaps from two different flood events:   <br>  
 <img src="figure_generation/figs/floodmaps/10-2023-0651-USA-3244_flooded.png" width="250" style="display:inline-block; margin-right:5px;">
 <img src="figure_generation/figs/floodmaps/09-2024-0648-CMR-818_flooded.png" width="250" style="display:inline-block; margin-right:5px;">
-<img src="figure_generation/figs/floodmaps/02-2020-0089-USA-3238_flooded.png" width="250" style="display:inline-block;">
 
 ## Overview
 

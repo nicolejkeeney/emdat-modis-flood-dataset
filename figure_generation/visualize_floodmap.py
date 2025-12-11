@@ -47,7 +47,7 @@ FIGS_DIR = "figs/"
 FLOODMAP_DIR = f"{FIGS_DIR}floodmaps/"
 
 # Configuration: Font settings
-plt.rcParams['font.family'] = 'Georgia'
+plt.rcParams["font.family"] = "Georgia"
 
 
 def parse_args():
@@ -114,7 +114,7 @@ def load_flood_data(tif_path):
 
     # Count pixels based on the configured variable
     if FLOOD_VARIABLE == "flooded":
-        num_pixels = np.sum(bands['flooded'] == 1).values
+        num_pixels = np.sum(bands["flooded"] == 1).values
         pixel_label = "Flooded pixels"
     else:
         num_pixels = np.sum(bands[FLOOD_VARIABLE] > 0).values
@@ -167,7 +167,9 @@ def get_admin_boundary(tif_path, gaul_path):
         return None
 
 
-def create_flood_visualization(bands, boundary, event_id, output_path, dpi=150, show=False):
+def create_flood_visualization(
+    bands, boundary, event_id, output_path, dpi=150, show=False
+):
     """
     Create a visualization of flood extent with basemap.
 
@@ -213,32 +215,32 @@ def create_flood_visualization(bands, boundary, event_id, output_path, dpi=150, 
     if not data_masked.mask.all():  # Check if there are any pixels to display
         # Choose colormap based on variable
         if FLOOD_VARIABLE == "flooded":
-            cmap = ListedColormap(['#0000FF'])
-            label = 'Flooded Pixels'
+            cmap = ListedColormap(["#0000FF"])
+            label = "Flooded Pixels"
         elif FLOOD_VARIABLE == "duration":
-            cmap = 'YlOrRd'
-            label = 'Flood Duration (days)'
+            cmap = "YlOrRd"
+            label = "Flood Duration (days)"
         else:
-            cmap = 'viridis'
-            label = FLOOD_VARIABLE.replace('_', ' ').title()
+            cmap = "viridis"
+            label = FLOOD_VARIABLE.replace("_", " ").title()
 
         im = ax.imshow(
             data_masked,
             extent=extent,
-            origin='upper',
+            origin="upper",
             cmap=cmap,
             alpha=0.7,
             zorder=2,
-            interpolation='nearest'
+            interpolation="nearest",
         )
 
     # Add basemap
     cx.add_basemap(
         ax,
-        crs='EPSG:3857',
+        crs="EPSG:3857",
         source=cx.providers.OpenStreetMap.Mapnik,
-        zoom='auto',
-        attribution=False
+        zoom="auto",
+        attribution=False,
     )
 
     # Add admin boundary if available and enabled
@@ -252,24 +254,28 @@ def create_flood_visualization(bands, boundary, event_id, output_path, dpi=150, 
 
     # Add legend
     if FLOOD_VARIABLE == "flooded":
-        data_patch = mpatches.Patch(color='#0000FF', label=label, alpha=0.7)
+        data_patch = mpatches.Patch(color="#0000FF", label=label, alpha=0.7)
         legend_handles = [data_patch]
     else:
         # For non-binary variables, skip the data patch (colorbar shows the scale)
         legend_handles = []
 
     if SHOW_ADMIN_BOUNDARY and boundary is not None:
-        boundary_patch = mpatches.Patch(facecolor='none', edgecolor='red', label='Admin Boundary', linewidth=1)
+        boundary_patch = mpatches.Patch(
+            facecolor="none", edgecolor="red", label="Admin Boundary", linewidth=1
+        )
         legend_handles.append(boundary_patch)
 
     if legend_handles:
-        ax.legend(handles=legend_handles, loc='upper right', framealpha=0.9, fontsize=14)
+        ax.legend(
+            handles=legend_handles, loc="upper right", framealpha=0.9, fontsize=14
+        )
 
     plt.tight_layout()
 
     # Save figure
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    plt.savefig(output_path, dpi=dpi, bbox_inches="tight", facecolor='white')
+    plt.savefig(output_path, dpi=dpi, bbox_inches="tight", facecolor="white")
     print(f"  Saved figure to {output_path}")
 
     # Show if requested

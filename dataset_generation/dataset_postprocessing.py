@@ -37,7 +37,9 @@ from utils.utils_misc import summarize_flags
 DATA_DIR = "../data/"
 METRICS_FILEPATH = f"{DATA_DIR}event_metrics.csv"
 EMDAT_DISAGGREGATED_FILEPATH = f"{DATA_DIR}emdat_floods_by_mon_yr_adm1.csv"
-EMDAT_NONDISAGREGGATED_FILEPATH = f"{DATA_DIR}emdat-2000-2024.csv" # Used for sorting data into original order 
+EMDAT_NONDISAGREGGATED_FILEPATH = (
+    f"{DATA_DIR}emdat-2000-2024.csv"  # Used for sorting data into original order
+)
 OUTPUT_FILEPATH = f"{DATA_DIR}emdat_modis_flood_dataset.csv"
 
 # Dictionary mapping problematic adm1_codes to correct countries per GAUL
@@ -190,15 +192,21 @@ def add_data_flags(metrics_df, emdat_df, emdat_orig_df):
 
     # Get missing rows and add appropriate flags
     missing_df = get_missing_rows(emdat_orig_df, metrics_df)
-    missing_df = missing_df[[col for col in missing_df.columns if col in flags_df.columns]]
+    missing_df = missing_df[
+        [col for col in missing_df.columns if col in flags_df.columns]
+    ]
     flags_df = pd.concat([flags_df, missing_df], ignore_index=True)
 
     # Replace EMDAT preprocessing string flags with appropriate numerical flags
-    mask1 = flags_df["data_processing_flags"].str.contains("Start day originally NaN", na=False)
+    mask1 = flags_df["data_processing_flags"].str.contains(
+        "Start day originally NaN", na=False
+    )
     flags_df.loc[mask1, "flags"] += "; 1"
     print(f"  Added flag 1 to {mask1.sum()} events (start day originally NaN)")
 
-    mask2 = flags_df["data_processing_flags"].str.contains("End day originally NaN", na=False)
+    mask2 = flags_df["data_processing_flags"].str.contains(
+        "End day originally NaN", na=False
+    )
     flags_df.loc[mask2, "flags"] += "; 2"
     print(f"  Added flag 2 to {mask2.sum()} events (end day originally NaN)")
 
@@ -224,10 +232,9 @@ def add_data_flags(metrics_df, emdat_df, emdat_orig_df):
     print(f"  Added flag 15 to {mask15.sum()} events")
 
     # GPW file not found
-    mask5 = (
-        flags_df["metrics_error"].str.contains("data/GPW_by_adm1/", na=False)
-        & flags_df["metrics_error"].str.contains("FileNotFound", na=False)
-    )
+    mask5 = flags_df["metrics_error"].str.contains(
+        "data/GPW_by_adm1/", na=False
+    ) & flags_df["metrics_error"].str.contains("FileNotFound", na=False)
     flags_df.loc[mask5, "flags"] += "; 5"
     print(f"  Added flag 5 to {mask5.sum()} events (GPW file not found)")
 
@@ -241,14 +248,18 @@ def add_data_flags(metrics_df, emdat_df, emdat_orig_df):
     print(f"  Added flag 6 to {mask6.sum()} events (coordinate mismatch)")
 
     # Start date before Terra satellite data available
-    mask3 = pd.to_datetime(flags_df["Start Date"], format="mixed") < pd.to_datetime("2000-02-25")
+    mask3 = pd.to_datetime(flags_df["Start Date"], format="mixed") < pd.to_datetime(
+        "2000-02-25"
+    )
     flags_df.loc[mask3, "flags"] += "; 3"
     print(f"  Added flag 3 to {mask3.sum()} events (start date before 2000-02-25)")
 
     # No tif found for reasons other than flag 3
     mask4_metrics = (
         flags_df["metrics_error"].str.contains("RasterioIOError", na=False)
-        & flags_df["metrics_error"].str.contains(".tif: No such file or directory", na=False)
+        & flags_df["metrics_error"].str.contains(
+            ".tif: No such file or directory", na=False
+        )
         & (~mask3)
     )
     flags_df.loc[mask4_metrics, "flags"] += "; 4"
@@ -331,7 +342,9 @@ def correct_country_assignments(df):
         if mask.any():
             df.loc[mask, "Country"] = correct_country
             corrections_made += mask.sum()
-    print(f"  Corrected {corrections_made} rows across {len(COUNTRY_CORRECTIONS)} admin1 codes")
+    print(
+        f"  Corrected {corrections_made} rows across {len(COUNTRY_CORRECTIONS)} admin1 codes"
+    )
     return df
 
 
@@ -352,7 +365,9 @@ def sort_by_original_order(df, emdat_orig_df):
         Sorted dataframe.
     """
     print("\nSorting by original event order...")
-    df["id"] = pd.Categorical(df["id"], categories=emdat_orig_df["id"].values, ordered=True)
+    df["id"] = pd.Categorical(
+        df["id"], categories=emdat_orig_df["id"].values, ordered=True
+    )
     df = df.sort_values("id").reset_index(drop=True)
     print(f"  Sorted {len(df)} events")
     return df

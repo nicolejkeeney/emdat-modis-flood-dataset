@@ -22,6 +22,7 @@ The pipeline produces `emdat_modis_flood_dataset.csv` containing MODIS-derived f
 - **EM-DAT**: International disaster database providing flood event records (2000-2024)
 - **MODIS**: Satellite imagery (Terra/Aqua) for flood detection via Google Earth Engine
 - **GAUL 2015**: Global Administrative Unit Layers (admin level 1 boundaries)
+- **GPW**: NASA's Gridded Global Population of the World dataset
 
 ## Repository Structure
 

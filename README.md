@@ -1,4 +1,5 @@
 # EM-DAT MODIS Flood Dataset
+[![DOI](https://zenodo.org/badge/1114140425.svg)](https://doi.org/10.5281/zenodo.17905100)
 
 This repository contains code for spatially and temporally disaggregating flood disaster records from EM-DAT using MODIS satellite imagery. The pipeline processes raw EM-DAT flood events (2000-2024), splits multi-region/multi-month events into admin1-month records, and creates flood maps for each disaggregated event using satellite imagery via Google Earth Engine.
 
